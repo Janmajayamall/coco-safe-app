@@ -1,6 +1,6 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  extends: ['plugin:@typescript-eslint/recommended', 'prettier', 'react-app', 'plugin:jsx-a11y/recommended'],
+  extends: ['prettier', 'react-app', 'plugin:jsx-a11y/recommended'],
   plugins: ['jsx-a11y'],
   parserOptions: {
     ecmaVersion: 2018,

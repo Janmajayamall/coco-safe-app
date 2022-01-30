@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Button, Title } from '@gnosis.pm/safe-react-components'
 import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
 import { NumberInput, NumberInputField, Input, Flex, Text, HStack } from '@chakra-ui/react'
+import UpdateParameters from './components/UpdateParameters'
 
 const Container = styled.div`
   padding: 1rem;
@@ -33,86 +34,16 @@ const Container = styled.div`
 //   symbol: string
 // }
 
-const InputWithTitle = (props) => {
-  const { valid, expText } = validationHelper()
-
-  function validationHelper() {
-    let res = {
-      valid: false,
-      expText: 'Invalid input type',
-    }
-    res = props.validationFn(props.value)
-    return res
-  }
-
-  return (
-    <Flex
-      style={{
-        flexDirection: 'column',
-        width: '100%',
-      }}
-    >
-      <Text
-        style={{
-          width: '100%',
-          marginTop: 5,
-        }}
-      >
-        {props.title}
-      </Text>
-      {props.inputType === 0 ? (
-        <HStack>
-          <Input
-            {...props.inputOptions}
-            style={{
-              width: '100%',
-              marginTop: 5,
-            }}
-            placeholder={props.title}
-            onChange={(e) => {
-              props.setValue(e.target.value)
-            }}
-            value={props.value}
-            fontSize={14}
-          />
-          {props.symbol != undefined ? <Text fontSize={14}>{`${props.symbol}`}</Text> : undefined}
-        </HStack>
-      ) : undefined}
-      {props.inputType === 1 ? (
-        <HStack>
-          <NumberInput
-            {...props.inputOptions}
-            style={{
-              width: '100%',
-              marginTop: 5,
-            }}
-            onChange={(val) => {
-              props.setValue(val)
-            }}
-            value={props.value}
-            fontSize={14}
-          >
-            <NumberInputField />
-          </NumberInput>
-          {props.symbol != '' ? <Text fontSize={14}>{`${props.symbol}`}</Text> : undefined}
-        </HStack>
-      ) : undefined}
-      {valid === false ? (
-        <Text
-          style={{
-            fontSize: 12,
-            color: '#EB5757',
-          }}
-        >
-          {expText}
-        </Text>
-      ) : undefined}
-    </Flex>
-  )
-}
+/**
+ * States
+ * 0. Main page
+ * 1. Update parameters
+ *
+ */
 
 const SafeApp = () => {
   const { sdk, safe } = useSafeAppsSDK()
+  const [safeState, setSafeState] = useState(0)
   const [inputString, setInputString] = useState('')
 
   const submitTx = useCallback(async () => {
@@ -136,25 +67,31 @@ const SafeApp = () => {
 
   return (
     <Container>
-      <Title size="md">Safe: {safe.safeAddress}</Title>
+      {safeState === 0 ? (
+        <>
+          <Button
+            size="lg"
+            color="primary"
+            onClick={() => {
+              setSafeState(1)
+            }}
+          >
+            Update parameter
+          </Button>
 
-      <Button size="lg" color="primary" onClick={submitTx}>
-        Click to send a test
-      </Button>
+          <Title size="md">Safe: {safe.safeAddress}</Title>
 
-      <InputWithTitle
-        title="yolo"
-        inputType={0}
-        value={inputString}
-        setValue={setInputString}
-        validationFn={() => {
-          return { valid: true, expStr: '2' }
-        }}
-        inputOptions={{}}
-        symbol="hr"
-      />
+          <Button size="lg" color="primary" onClick={submitTx}>
+            Click to send a test
+          </Button>
+        </>
+      ) : undefined}
+      {safeState === 1 ? <UpdateParameters /> : undefined}
     </Container>
   )
 }
 
+/**
+ * In the second half, show a list of posts for which outcomes have to be delcared.
+ */
 export default SafeApp

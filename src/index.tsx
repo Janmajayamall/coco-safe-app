@@ -12,6 +12,7 @@ ReactDOM.render(
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <SafeProvider
+        
         loader={
           <>
             <Title size="md">Waiting for Safe...</Title>
