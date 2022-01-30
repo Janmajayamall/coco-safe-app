@@ -1,3 +1,6 @@
+import Web3 from 'web3'
+import OracleAbi from './contracts/abis/Oracle.json'
+
 // constants
 // export const ZERO_BN = BigNumber.from('0')
 // export const ONE_BN = BigNumber.from('1')
@@ -167,3 +170,7 @@ export function validateUpdateMarketConfigTxInputs(fee, escalationLimit, expireH
 export function convertHoursToBlocks(hours) {
   return Math.ceil((3600 * hours) / 15)
 }
+
+// contract instances
+const web3 = new Web3()
+export const oracleContract = (oracleAddress) => new web3.eth.Contract(OracleAbi, oracleAddress)

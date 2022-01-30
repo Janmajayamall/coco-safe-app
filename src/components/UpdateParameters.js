@@ -11,17 +11,15 @@ import {
   validateExpireHours,
   validateResolutionHours,
   convertHoursToBlocks,
+  oracleContract,
 } from './../utils'
 import Web3 from 'web3'
 import OracleAbi from './../contracts/abis/Oracle.json'
 
-const web3 = new Web3()
-var oracleContractInstance = new web3.eth.Contract(OracleAbi, '0x40703F4eb55371520Bb82aE6021990eC1d482323')
-
 const UpdateParameters = () => {
   const { sdk, safe } = useSafeAppsSDK()
 
-  const [groups, setGroups] = useState([])
+  const [groups, setGroups] = useState(['0x40703F4eb55371520Bb82aE6021990eC1d482323'])
   /**
    * Oracle config state
    */
@@ -40,20 +38,10 @@ const UpdateParameters = () => {
 
   const submitTx = useCallback(async () => {
     try {
-      console.log(' jm')
       const feeNum = Number(fee) * 1000
       const feeDenom = 1000
-      console.log(
-        true,
-        feeNum,
-        feeDenom,
-        escalationLimit,
-        convertHoursToBlocks(expireHours),
-        convertHoursToBlocks(bufferHours),
-        convertHoursToBlocks(resolutionHours),
-      )
-      const txData = oracleContractInstance.methods
-        .updateMarketConfig(
+      const txData = oracleContract(groups[0])
+        .methods.updateMarketConfig(
           true,
           feeNum,
           feeDenom,
@@ -67,7 +55,7 @@ const UpdateParameters = () => {
       const { safeTxHash } = await sdk.txs.send({
         txs: [
           {
-            to: '0x40703F4eb55371520Bb82aE6021990eC1d482323',
+            to: groups[0],
             value: '0',
             data: txData,
           },
