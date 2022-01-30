@@ -5,6 +5,7 @@ import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
 import { NumberInput, NumberInputField, Input, Flex, Text, HStack } from '@chakra-ui/react'
 import UpdateParameters from './components/UpdateParameters'
 import { useQueryOraclesByManager, useQueryMarketsAtStage3ByOracles } from './hooks'
+import DeclareOutcome from './components/DeclareOutcome'
 
 const Container = styled.div`
   padding: 1rem;
@@ -48,6 +49,9 @@ const SafeApp = () => {
   const [safeOracles, setSafeOracles] = useState([]) // oracles managed by safe (i.e. manager == safeAddress)
   const [safeState, setSafeState] = useState(0)
 
+  // state == 2 helpers
+  const [selectedMarket, setSelectedMarket] = useState(null)
+
   const { result: oraclesByManagerResult, reexecuteQuery: rQoraclesByManager } = useQueryOraclesByManager(
     safe.safeAddress.toLowerCase(),
     false,
@@ -82,31 +86,33 @@ const SafeApp = () => {
     }
   }, [safeOracles])
 
-  //
-
-  const submitTx = useCallback(async () => {
-    try {
-      const { safeTxHash } = await sdk.txs.send({
-        txs: [
-          {
-            to: safe.safeAddress,
-            value: '0',
-            data: '0x',
-          },
-        ],
-      })
-      console.log({ safeTxHash })
-      const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash)
-      console.log({ safeTx })
-    } catch (e) {
-      console.error(e)
-    }
-  }, [safe, sdk])
-
   const ActionRow = () => {
     return (
       <Flex>
-        <Text>View Post</Text>
+        <Button
+          size="md"
+          color="secondary"
+          onClick={() => {
+            setSelectedMarket({
+              marketIdentifier: '0x40703F4eb55371520Bb82aE6021990eC1d482323',
+              oracle: { id: '0x40703f4eb55371520bb82ae6021990ec1d482323 ' },
+            })
+            setSafeState(2)
+          }}
+        >
+          Declare Outcome
+        </Button>
+        <Text
+          onClick={() => {
+            window.open(
+              'https://www.cocoverse.club/post/0x3ae023614e51415572486ddd21c691a264e912ca2589814440ba2189de0a5ced',
+              '_blank',
+            )
+          }}
+          _hover={{ cursor: 'pointer', textDecoration: 'underline' }}
+        >
+          View Post
+        </Text>
       </Flex>
     )
   }
@@ -126,22 +132,19 @@ const SafeApp = () => {
           </Button>
 
           <Title size="md">Posts that need action</Title>
-          <Flex direction={'column'}>
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
-            <ActionRow />
+          <Flex
+            direction={'column'}
+            sx={{
+              '&::-webkit-scrollbar': {
+                width: '16px',
+                borderRadius: '8px',
+                backgroundColor: `rgba(0, 0, 0, 0.05)`,
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: `rgba(0, 0, 0, 0.05)`,
+              },
+            }}
+          >
             <ActionRow />
             <ActionRow />
             <ActionRow />
@@ -152,12 +155,10 @@ const SafeApp = () => {
             <ActionRow />
             <ActionRow />
           </Flex>
-          <Button size="lg" color="primary" onClick={submitTx}>
-            Click to send a test
-          </Button>
         </>
       ) : undefined}
-      {safeState === 1 ? <UpdateParameters /> : undefined}
+      {safeState === 1 ? <UpdateParameters setSafeState={setSafeState} /> : undefined}
+      {safeState === 2 ? <DeclareOutcome setSafeState={setSafeState} market={selectedMarket} /> : undefined}
     </Container>
   )
 }

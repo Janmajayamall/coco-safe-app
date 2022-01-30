@@ -2,7 +2,7 @@ import React, { useCallback, useState, FC, useEffect } from 'react'
 import styled from 'styled-components'
 import { Button, Title } from '@gnosis.pm/safe-react-components'
 import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
-import { Select } from '@chakra-ui/react'
+import { Select, Spacer, Flex } from '@chakra-ui/react'
 import InputWithTitle from './InputWithTitle'
 import {
   validateFee,
@@ -13,10 +13,9 @@ import {
   convertHoursToBlocks,
   oracleContract,
 } from './../utils'
-import Web3 from 'web3'
-import OracleAbi from './../contracts/abis/Oracle.json'
+import { ArrowBackIcon } from '@chakra-ui/icons'
 
-const UpdateParameters = () => {
+const UpdateParameters = (props) => {
   const { sdk, safe } = useSafeAppsSDK()
 
   const [groups, setGroups] = useState(['0x40703F4eb55371520Bb82aE6021990eC1d482323'])
@@ -67,91 +66,111 @@ const UpdateParameters = () => {
     } catch (e) {
       console.error(e)
     }
-  }, [safe, sdk])
+  }, [safe, sdk, groups, fee, escalationLimit, expireHours, bufferHours, resolutionHours])
 
   return (
-    <>
-      <Select
-        onChange={(e) => {
-          //   setFilter(e.target.value)
-        }}
-        fontSize={14}
-        placeholder="No Filter"
-        borderWidth={1}
-        borderStyle="solid"
-        borderColor="#0B0B0B"
-      >
-        <option value={1}>Live</option>
-        <option value={2}>Challenge</option>
-        <option value={3}>Resolution</option>
-        <option value={4}>Final</option>
-        <option value={5}>Pending Redeem</option>
-        <option value={6}>Created by you</option>
-      </Select>
-      {InputWithTitle(
-        'Fee',
-        1,
-        fee,
-        setFee,
-        validateFee,
-        {
-          defaultValue: 0.05,
-          precision: 3,
-        },
-        '',
-      )}
-      {InputWithTitle(
-        'Max. no. of Challenge rounds',
-        1,
-        escalationLimit,
-        setEscalationLimit,
-        validateEscalationLimit,
-        {
-          defaultValue: 1,
-          precision: 0,
-        },
-        '',
-      )}
-      {InputWithTitle(
-        'Trading Period (in hrs)',
-        1,
-        expireHours,
-        setExpireHours,
-        validateExpireHours,
-        {
-          defaultValue: 1,
-          precision: 0,
-        },
-        'Hr',
-      )}
-      {InputWithTitle(
-        'Challenge period (in hrs)',
-        1,
-        bufferHours,
-        setBufferHours,
-        validateBufferHours,
-        {
-          defaultValue: 1,
-          precision: 0,
-        },
-        'Hr',
-      )}
-      {InputWithTitle(
-        'Resolution period (in hrs)',
-        1,
-        resolutionHours,
-        setResolutionHours,
-        validateResolutionHours,
-        {
-          defaultValue: 1,
-          precision: 0,
-        },
-        'Hr',
-      )}
-      <Button size="lg" color="primary" onClick={submitTx}>
-        Send tx
-      </Button>
-    </>
+    <Flex flexDirection={'column'}>
+      <Flex alignItems="center">
+        <ArrowBackIcon
+          onClick={() => {
+            props.setSafeState(0)
+          }}
+          // marginRight={5}
+          w={20}
+          h={20}
+          marginBottom={10}
+          color="#0B0B0B"
+          _hover={{
+            cursor: 'pointer',
+            textDecoration: 'underline',
+          }}
+        />
+        <Spacer />
+      </Flex>
+
+      <Flex flexDirection={'column'}>
+        <Select
+          onChange={(e) => {
+            //   setFilter(e.target.value)
+          }}
+          fontSize={14}
+          placeholder="No Filter"
+          borderWidth={1}
+          borderStyle="solid"
+          borderColor="#0B0B0B"
+        >
+          <option value={1}>Live</option>
+          <option value={2}>Challenge</option>
+          <option value={3}>Resolution</option>
+          <option value={4}>Final</option>
+          <option value={5}>Pending Redeem</option>
+          <option value={6}>Created by you</option>
+        </Select>
+        {InputWithTitle(
+          'Fee',
+          1,
+          fee,
+          setFee,
+          validateFee,
+          {
+            defaultValue: 0.05,
+            precision: 3,
+          },
+          '',
+        )}
+        {InputWithTitle(
+          'Max. no. of Challenge rounds',
+          1,
+          escalationLimit,
+          setEscalationLimit,
+          validateEscalationLimit,
+          {
+            defaultValue: 1,
+            precision: 0,
+          },
+          '',
+        )}
+        {InputWithTitle(
+          'Trading Period (in hrs)',
+          1,
+          expireHours,
+          setExpireHours,
+          validateExpireHours,
+          {
+            defaultValue: 1,
+            precision: 0,
+          },
+          'Hr',
+        )}
+        {InputWithTitle(
+          'Challenge period (in hrs)',
+          1,
+          bufferHours,
+          setBufferHours,
+          validateBufferHours,
+          {
+            defaultValue: 1,
+            precision: 0,
+          },
+          'Hr',
+        )}
+        {InputWithTitle(
+          'Resolution period (in hrs)',
+          1,
+          resolutionHours,
+          setResolutionHours,
+          validateResolutionHours,
+          {
+            defaultValue: 1,
+            precision: 0,
+          },
+          'Hr',
+        )}
+        <Button size="lg" color="primary" onClick={submitTx}>
+          Send tx
+        </Button>
+      </Flex>
+    </Flex>
   )
 }
 
