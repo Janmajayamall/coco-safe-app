@@ -4,7 +4,7 @@ import { Button, Title } from '@gnosis.pm/safe-react-components'
 import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
 import { Select, Spacer, Flex, Text } from '@chakra-ui/react'
 import InputWithTitle from './InputWithTitle'
-import { oracleContract } from './../utils'
+import { oracleContract } from '../utils'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
 const DeclareOutcome = ({ market, setSafeState }) => {
@@ -14,7 +14,6 @@ const DeclareOutcome = ({ market, setSafeState }) => {
 
   const submitTx = useCallback(async () => {
     try {
-      console.log(outcome, ' kj')
       const txData = oracleContract(market.oracle.id).methods.setOutcome(outcome, market.marketIdentifier).encodeABI()
       const { safeTxHash } = await sdk.txs.send({
         txs: [

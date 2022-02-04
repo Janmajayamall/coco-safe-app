@@ -73,7 +73,7 @@ const SafeApp = () => {
     if (oraclesByManagerResult.data && oraclesByManagerResult.data.oracles) {
       let _oracles = []
       oraclesByManagerResult.data.oracles.forEach((oracle) => {
-        _oracles.push(oracle.id)
+        _oracles.push(oracle.id.toLowerCase())
       })
       setSafeOracles(_oracles)
     }
@@ -157,7 +157,7 @@ const SafeApp = () => {
           </Flex>
         </>
       ) : undefined}
-      {safeState === 1 ? <UpdateParameters setSafeState={setSafeState} /> : undefined}
+      {safeState === 1 ? <UpdateParameters safeOracles={safeOracles} setSafeState={setSafeState} /> : undefined}
       {safeState === 2 ? <DeclareOutcome setSafeState={setSafeState} market={selectedMarket} /> : undefined}
     </Container>
   )

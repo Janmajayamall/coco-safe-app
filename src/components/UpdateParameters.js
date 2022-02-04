@@ -12,10 +12,11 @@ import {
   validateResolutionHours,
   convertHoursToBlocks,
   oracleContract,
-} from './../utils'
+  findModeratorsByIdArr,
+} from '../utils'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 
-const UpdateParameters = (props) => {
+const UpdateParameters = ({ safeOracles, setSafeState }) => {
   const { sdk, safe } = useSafeAppsSDK()
 
   const [groups, setGroups] = useState(['0x40703F4eb55371520Bb82aE6021990eC1d482323'])
@@ -29,11 +30,15 @@ const UpdateParameters = (props) => {
   const [resolutionHours, setResolutionHours] = useState(1)
 
   // get groups governed by safe
-  useEffect(() => {
-    // TODO groups
-    const _groups = []
-    setGroups(_groups)
-  }, [])
+  useEffect(async () => {
+    if (safeOracles.length != 0) {
+      let res = await findModeratorsByIdArr(safeOracles)
+      if (res == undefined) {
+        return
+      }
+      setGroups(res.moderators)
+    }
+  }, [safeOracles])
 
   const submitTx = useCallback(async () => {
     try {
@@ -73,7 +78,7 @@ const UpdateParameters = (props) => {
       <Flex alignItems="center">
         <ArrowBackIcon
           onClick={() => {
-            props.setSafeState(0)
+            setSafeState(0)
           }}
           // marginRight={5}
           w={20}
